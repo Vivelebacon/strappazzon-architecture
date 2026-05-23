@@ -34,7 +34,21 @@ export default function Navbar() {
   const handleNavClick = (target: string) => {
     if (pathname !== '/') return; // on a sub-route, let the link navigate home
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('expand-hero', { detail: target }));
+      if (target === '#home') {
+        window.dispatchEvent(new CustomEvent('collapse-hero'));
+      } else {
+        window.dispatchEvent(new CustomEvent('expand-hero', { detail: target }));
+      }
+    }
+  };
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (pathname !== '/') return; // let the link navigate home from sub-routes
+    e.preventDefault();
+    setIsOpen(false);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('collapse-hero'));
+      history.replaceState(null, '', '/');
     }
   };
 
@@ -48,7 +62,7 @@ export default function Navbar() {
         }`}
       >
         <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
-          <Link href="/" className="group flex flex-col items-start gap-0.5">
+          <Link href="/" onClick={handleLogoClick} className="group flex flex-col items-start gap-0.5 cursor-pointer">
             <span className="text-xl md:text-2xl font-light tracking-[0.25em] text-white transition-colors duration-300 group-hover:text-accent">
               ALAN STRAPPAZZON
             </span>

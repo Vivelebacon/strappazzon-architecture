@@ -102,6 +102,16 @@ const ScrollExpandMedia = ({
     };
     window.addEventListener('expand-hero', onExpandRequest as EventListener);
 
+    // Collapse hero back to its initial state (logo / Accueil click).
+    const onCollapseRequest = () => {
+      expandedRef.current = false;
+      setScrollProgress(0);
+      setMediaFullyExpanded(false);
+      setShowContent(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    window.addEventListener('collapse-hero', onCollapseRequest as EventListener);
+
     // Handle initial load with hash.
     if (typeof window !== 'undefined' && window.location.hash) {
       // Small delay so DOM nodes inside <ScrollExpandMedia> children are mounted.
@@ -112,6 +122,7 @@ const ScrollExpandMedia = ({
     return () => {
       window.removeEventListener('hashchange', expandAndScroll);
       window.removeEventListener('expand-hero', onExpandRequest as EventListener);
+      window.removeEventListener('collapse-hero', onCollapseRequest as EventListener);
     };
   }, []);
 
