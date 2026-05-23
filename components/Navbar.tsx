@@ -25,11 +25,18 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: 'ACCUEIL', href: pathname === '/' ? '#home' : '/' },
-    { name: 'RÉALISATIONS', href: pathname === '/' ? '#realisations' : '/#realisations' },
-    { name: 'À PROPOS', href: pathname === '/' ? '#about' : '/#about' },
-    { name: 'CONTACT', href: pathname === '/' ? '#contact' : '/#contact' },
+    { name: 'ACCUEIL', href: pathname === '/' ? '#home' : '/', target: '#home' },
+    { name: 'RÉALISATIONS', href: pathname === '/' ? '#realisations' : '/#realisations', target: '#realisations' },
+    { name: 'À PROPOS', href: pathname === '/' ? '#about' : '/#about', target: '#about' },
+    { name: 'CONTACT', href: pathname === '/' ? '#contact' : '/#contact', target: '#contact' },
   ];
+
+  const handleNavClick = (target: string) => {
+    if (pathname !== '/') return; // on a sub-route, let the link navigate home
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('expand-hero', { detail: target }));
+    }
+  };
 
   return (
     <>
@@ -56,6 +63,7 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
+                onClick={() => handleNavClick(link.target)}
                 className="text-xs tracking-[0.2em] font-medium text-zinc-300 hover:text-accent transition-colors duration-300 relative py-1"
               >
                 {link.name}
@@ -63,6 +71,7 @@ export default function Navbar() {
             ))}
             <Link
               href={pathname === '/' ? '#contact' : '/#contact'}
+              onClick={() => handleNavClick('#contact')}
               className="group flex items-center gap-1.5 px-4 py-2 border border-zinc-750 text-xs tracking-[0.2em] hover:border-accent text-zinc-200 hover:text-white transition-all duration-300 rounded bg-zinc-900/40 backdrop-blur-sm"
             >
               MANDAT
@@ -101,7 +110,7 @@ export default function Navbar() {
                   transition={{ delay: idx * 0.08 }}
                 >
                   <Link
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => { setIsOpen(false); handleNavClick(link.target); }}
                     href={link.href}
                     className="text-2xl tracking-[0.25em] font-light text-zinc-300 hover:text-accent transition-colors duration-300"
                   >
@@ -116,7 +125,7 @@ export default function Navbar() {
                 className="mt-8 flex justify-center"
               >
                 <Link
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => { setIsOpen(false); handleNavClick('#contact'); }}
                   href={pathname === '/' ? '#contact' : '/#contact'}
                   className="flex items-center gap-2 px-8 py-3 border border-accent/30 text-sm tracking-[0.2em] text-accent hover:border-accent hover:bg-accent/5 transition-all duration-300 rounded"
                 >

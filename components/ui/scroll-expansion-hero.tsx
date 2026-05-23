@@ -54,6 +54,13 @@ const ScrollExpandMedia = ({
   }, [slideList.length]);
 
   const sectionRef = useRef<HTMLDivElement | null>(null);
+  const expandedRef = useRef<boolean>(false);
+
+  // Mirror mediaFullyExpanded into a ref so the scroll-lock handler reads the
+  // current value without waiting for React to commit.
+  useEffect(() => {
+    expandedRef.current = mediaFullyExpanded;
+  }, [mediaFullyExpanded]);
 
   useEffect(() => {
     setScrollProgress(0);
@@ -66,6 +73,9 @@ const ScrollExpandMedia = ({
     const expandAndScroll = () => {
       const hash = window.location.hash;
       if (!hash || hash === '#home') return;
+      // Set ref synchronously so the scroll-lock handler stops blocking
+      // before the browser performs the default anchor jump.
+      expandedRef.current = true;
       setScrollProgress(1);
       setMediaFullyExpanded(true);
       setShowContent(true);
@@ -76,6 +86,22 @@ const ScrollExpandMedia = ({
       });
     };
 
+    // Allow Navbar (or anything else) to trigger expansion without a hashchange.
+    const onExpandRequest = (e: Event) => {
+      const target = (e as CustomEvent<string>).detail;
+      expandedRef.current = true;
+      setScrollProgress(1);
+      setMediaFullyExpanded(true);
+      setShowContent(true);
+      requestAnimationFrame(() => {
+        if (target) {
+          const el = document.querySelector(target);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    };
+    window.addEventListener('expand-hero', onExpandRequest as EventListener);
+
     // Handle initial load with hash.
     if (typeof window !== 'undefined' && window.location.hash) {
       // Small delay so DOM nodes inside <ScrollExpandMedia> children are mounted.
@@ -83,7 +109,10 @@ const ScrollExpandMedia = ({
     }
 
     window.addEventListener('hashchange', expandAndScroll);
-    return () => window.removeEventListener('hashchange', expandAndScroll);
+    return () => {
+      window.removeEventListener('hashchange', expandAndScroll);
+      window.removeEventListener('expand-hero', onExpandRequest as EventListener);
+    };
   }, []);
 
   useEffect(() => {
@@ -149,7 +178,7 @@ const ScrollExpandMedia = ({
     };
 
     const handleScroll = (): void => {
-      if (!mediaFullyExpanded) {
+      if (!expandedRef.current) {
         window.scrollTo(0, 0);
       }
     };
