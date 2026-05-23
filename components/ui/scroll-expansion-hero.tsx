@@ -61,6 +61,31 @@ const ScrollExpandMedia = ({
     setMediaFullyExpanded(false);
   }, [mediaType]);
 
+  // Auto-expand hero when navigating to a hash anchor (menu links).
+  useEffect(() => {
+    const expandAndScroll = () => {
+      const hash = window.location.hash;
+      if (!hash || hash === '#home') return;
+      setScrollProgress(1);
+      setMediaFullyExpanded(true);
+      setShowContent(true);
+      // Wait one frame for content to become visible, then scroll to anchor.
+      requestAnimationFrame(() => {
+        const el = document.querySelector(hash);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    };
+
+    // Handle initial load with hash.
+    if (typeof window !== 'undefined' && window.location.hash) {
+      // Small delay so DOM nodes inside <ScrollExpandMedia> children are mounted.
+      setTimeout(expandAndScroll, 50);
+    }
+
+    window.addEventListener('hashchange', expandAndScroll);
+    return () => window.removeEventListener('hashchange', expandAndScroll);
+  }, []);
+
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       if (mediaFullyExpanded && e.deltaY < 0 && window.scrollY <= 5) {
