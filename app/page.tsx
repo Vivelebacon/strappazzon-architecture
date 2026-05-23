@@ -19,8 +19,33 @@ import {
 } from 'lucide-react';
 import { projects } from '@/data/projects';
 import ScrollExpandMedia from '@/components/ui/scroll-expansion-hero';
+import { Testimonial } from '@/components/ui/testimonial';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+
+const testimonials = [
+  {
+    quote:
+      "Architecte très passionné, professionnel et à l'écoute de ses clients. Merci beaucoup pour cette belle collaboration !",
+    authorName: 'Samuel S.',
+    authorPosition: 'Client',
+    highlightedText: 'professionnel et à l\'écoute',
+  },
+  {
+    quote:
+      "Un architecte de talent ! Grâce à son expertise et à son sens aigu de l'esthétique, notre projet a pris une dimension incroyable.",
+    authorName: 'Laureen M.',
+    authorPosition: 'Cliente',
+    highlightedText: 'sens aigu de l\'esthétique',
+  },
+  {
+    quote:
+      "Alan est un architecte qui combine habilement l'innovation et la tradition. Ses projets se distinguent par un souci du détail.",
+    authorName: 'Mina Caterina',
+    authorPosition: 'Cliente',
+    highlightedText: 'souci du détail',
+  },
+];
 
 export default function Home() {
   const [filter, setFilter] = useState<'all' | 'villa' | 'residentiel' | 'commerce' | 'bureaux'>('all');
@@ -101,7 +126,7 @@ export default function Home() {
                 <button
                   key={cat.id}
                   onClick={() => setFilter(cat.id as any)}
-                  className={`px-4 py-2 text-[10px] tracking-widest font-mono border rounded transition-all duration-300 ${
+                  className={`cursor-pointer px-4 py-2 text-[10px] tracking-widest font-mono border rounded transition-all duration-300 ${
                     filter === cat.id
                       ? 'border-accent text-accent bg-accent/5'
                       : 'border-zinc-900 text-zinc-400 hover:border-zinc-700 hover:text-white'
@@ -126,10 +151,12 @@ export default function Home() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.5, delay: index * 0.05 }}
-                    className="group"
+                    whileHover={{ y: -6, rotateX: 2, rotateY: -2 }}
+                    style={{ perspective: 1000, transformStyle: 'preserve-3d' }}
+                    className="group cursor-pointer"
                   >
-                    <Link href={`/realisations/${project.slug}`} className="block">
-                      <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-zinc-900 mb-5 border border-zinc-900/60 shadow-lg">
+                    <Link href={`/realisations/${project.slug}`} className="block cursor-pointer">
+                      <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-zinc-900 mb-5 border border-zinc-900/60 shadow-lg transition-all duration-500 group-hover:border-accent/30 group-hover:shadow-2xl group-hover:shadow-accent/10">
                         <Image
                           src={project.image}
                           alt={project.title}
@@ -247,6 +274,42 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Testimonials Section */}
+        <section id="testimonials" className="py-24 border-t border-zinc-900/50 relative overflow-hidden">
+          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="container mx-auto relative">
+            <div className="flex flex-col items-center text-center gap-4 mb-16">
+              <span className="text-xs tracking-[0.3em] font-medium text-accent font-mono">
+                CLIENTS SATISFAITS
+              </span>
+              <h2 className="text-3xl md:text-5xl font-light text-white tracking-tight max-w-2xl">
+                La confiance de nos clients,<br className="hidden md:inline" /> notre meilleure réalisation
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+              {testimonials.map((t, i) => (
+                <motion.div
+                  key={t.authorName}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ duration: 0.7, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ perspective: 1200 }}
+                >
+                  <Testimonial
+                    quote={t.quote}
+                    authorName={t.authorName}
+                    authorPosition={t.authorPosition}
+                    highlightedText={t.highlightedText}
+                    className="h-full"
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Contact Section */}
         <section id="contact" className="py-24 border-t border-zinc-900/50 bg-zinc-950/40 relative z-10">
           <div className="container mx-auto">
@@ -347,7 +410,7 @@ export default function Home() {
                     </label>
                     <select
                       id="subject"
-                      className="px-4 py-3 bg-zinc-900/60 border border-zinc-800 rounded text-zinc-200 focus:outline-none focus:border-accent/60 text-sm font-light transition-all"
+                      className="cursor-pointer px-4 py-3 bg-zinc-900/60 border border-zinc-800 rounded text-zinc-200 focus:outline-none focus:border-accent/60 text-sm font-light transition-all"
                     >
                       <option className="bg-zinc-950" value="villa">Construction de Villa individuelle</option>
                       <option className="bg-zinc-950" value="renovation">Rénovation Thermique / Restructuration</option>
@@ -372,7 +435,7 @@ export default function Home() {
 
                   <button
                     type="submit"
-                    className="group relative flex items-center justify-center gap-2 mt-2 px-8 py-3.5 bg-accent text-zinc-950 font-mono font-bold tracking-widest text-xs hover:bg-accent-hover active:scale-[0.98] transition-all rounded shadow-lg shadow-accent/10"
+                    className="cursor-pointer group relative flex items-center justify-center gap-2 mt-2 px-8 py-3.5 bg-accent text-zinc-950 font-mono font-bold tracking-widest text-xs hover:bg-accent-hover active:scale-[0.98] transition-all rounded shadow-lg shadow-accent/10"
                   >
                     <Send className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     ENVOYER LE MESSAGE

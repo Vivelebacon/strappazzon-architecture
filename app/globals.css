@@ -50,6 +50,26 @@ body {
   overflow-x: hidden;
 }
 
+/* Restore pointer cursor on interactive elements (Tailwind v4 preflight resets it) */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+a[href],
+summary,
+label[for],
+select,
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 /* Custom scrollbar for premium feel */
 ::-webkit-scrollbar {
   width: 6px;
